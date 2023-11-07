@@ -96,6 +96,14 @@ async function fileChoice() {
                 console.log("open folder sucessfully");
               }
             });
+            exec(`cd ${fullname}`,(err)=>{
+              if (err) {
+                console.error("Some internal error!");
+              } else {
+                console.log("You are the project directory");
+                console.log("Happy Coding")
+              }
+            })
           });
       } else if (answers.choice === "Show the projects") {
         console.log("showing all current projects...");
