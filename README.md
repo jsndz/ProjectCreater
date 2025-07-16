@@ -24,8 +24,6 @@ npm install
 npm link
 ```
 
-````
-
 Now you can run it from anywhere:
 
 ```bash
@@ -77,8 +75,7 @@ Templates are saved under:
 
 ```
 templates/
-└── user/
-    └── my-custom-template.json
+└── my-custom-template.json
 ```
 
 ---
@@ -186,6 +183,3 @@ This tool was built to:
 
 Feel free to [open an issue](https://github.com/jsndz/projector/issues)
 or reach out on [X](https://x.com/https://x.com/jzn18524) / [LinkedIn](https://www.linkedin.com/in/jaison-dsouza-414082263/)
-
-
-````

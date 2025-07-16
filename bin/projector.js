@@ -7,7 +7,9 @@ import { generate } from "random-words";
 import fs from "fs";
 import path from "path";
 import { exec } from "child_process";
-
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 console.log(
   chalk
     .bgHex("#1a1a1a")
@@ -48,36 +50,35 @@ async function createProject() {
   console.log(
     chalk.gray("Project will be created in your current working directory.")
   );
-
-  const template = await select({
-    message: chalk.yellow("Choose a template?"),
-    choices: [
-      { name: "HTML+CSS+JS", value: "htmlcssjs" },
-      { name: "Backend go", value: "go" },
-    ],
+  const templatesDir = path.join(__dirname, "../templates");
+  const files = fs.readdirSync(templatesDir).filter((f) => f.endsWith(".js"));
+  const choices = files.map((file) => {
+    const name = file.replace(/-/g, " ").replace(".js", "").toUpperCase();
+    return {
+      name: name,
+      value: file.replace(".js", ""),
+    };
   });
-  console.log(chalk.magenta(`Selected template: ${template}`));
+  const selected = await select({
+    message: chalk.yellow("Choose a template"),
+    choices,
+  });
+
+  console.log(chalk.magenta(`Selected template: ${selected}`));
+
   const folderName = await input({ message: "Enter project name:" });
   const targetPath = path.join(process.cwd(), folderName);
 
-  fs.mkdir(targetPath, (err) => {
-    if (err) {
-      console.error(chalk.red("A folder with this name already exists."));
-      return;
+  try {
+    const templateModule = await import(`../templates/${selected}.js`);
+    if (typeof templateModule.create === "function") {
+      await templateModule.create(targetPath);
+    } else {
+      console.error(chalk.red("Template does not export a 'create' function."));
     }
-    console.log(chalk.green("Project folder created successfully."));
-
-    exec(`cd ${targetPath}`, (err) => {
-      if (err) {
-        console.error(
-          chalk.red("Failed to switch to the new project directory.")
-        );
-      } else {
-        console.log(chalk.cyan("Switched to the project directory."));
-        console.log(chalk.greenBright("Ready to start coding."));
-      }
-    });
-  });
+  } catch (err) {
+    console.error(chalk.red("Failed to load template:"), err.message);
+  }
 }
 
 async function showTemplates() {
