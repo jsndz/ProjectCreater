@@ -42,7 +42,6 @@ Upon launch, you'll be prompted to choose an action:
     Show the templates
     Create templates
     Delete a template
-    Clone a template
 ```
 
 ---
